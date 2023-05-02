@@ -28,10 +28,10 @@ public class marcojuego extends View {
         super(context, attrs, defStyleAttr, defStyleRes);
     }
 
-    private Puntos [][] mPuntos;
-    private int mEspacioCaja;
-    private int mRellenoCaja;
-    private int mEspacioJuego;
+    private Puntos[][] mPuntos = null;
+    private int mEspacioCaja = 0;
+    private int mRellenoCaja = 0;
+    private int mEspacioJuego = 0;
 
     private final Paint mPaint = new Paint();
 
@@ -39,7 +39,7 @@ public class marcojuego extends View {
         mEspacioJuego = espacioJuego;
         getViewTreeObserver().addOnGlobalLayoutListener(() ->{
             mRellenoCaja = Math.min(getWidth(), getHeight()) / mEspacioJuego;
-            mRellenoCaja = mEspacioCaja / 10;
+            mRellenoCaja = mRellenoCaja / 10;
         });
     }
 
@@ -56,7 +56,7 @@ public class marcojuego extends View {
         super.onDraw(canvas);
         mPaint.setColor(Color.BLACK);
         canvas.drawRect(0,0, mEspacioJuego, mEspacioJuego, mPaint);
-        if(mPaint == null ) {
+        if(mPuntos == null ) {
             return;
         }
         for (int i = 0; i < mEspacioJuego; i++){
@@ -72,10 +72,10 @@ public class marcojuego extends View {
                         boton = arriba + mEspacioCaja - mRellenoCaja;
                         break;
                         case LINEA_VERTICAL:
-                        izquierda = mEspacioCaja * puntos.x;
-                        derecha = izquierda + mRellenoCaja;
-                        arriba = mEspacioCaja * puntos.y;
-                        boton = arriba + mEspacioCaja;
+                            izquierda = mEspacioCaja * puntos.x + mRellenoCaja;;
+                            derecha = izquierda + mRellenoCaja;
+                            arriba = mEspacioCaja * puntos.y;
+                            boton = arriba + mEspacioCaja;
                         break;
                     case LINEA_HORIZONTAL:
                         izquierda = mEspacioCaja + puntos.y;
@@ -89,7 +89,6 @@ public class marcojuego extends View {
                         derecha = izquierda +mEspacioCaja;
                         arriba = mEspacioCaja * puntos.y;
                         boton = arriba + mEspacioCaja;
-                        mPaint.setColor(Color.BLACK);
                 }
                 canvas.drawRect(izquierda,arriba,derecha,boton,mPaint);
             }
