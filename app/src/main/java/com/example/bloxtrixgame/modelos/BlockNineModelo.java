@@ -1,8 +1,8 @@
 package com.example.bloxtrixgame.modelos;
 
-import android.graphics.Point;
+
 import android.os.Handler;
-import android.widget.ThemedSpinnerAdapter;
+import android.util.Log;
 
 import com.example.bloxtrixgame.presentacion.PresenterCompletableObserver;
 import com.example.bloxtrixgame.presentacion.PresenterObserver;
@@ -14,270 +14,40 @@ import com.example.bloxtrixgame.presentacion.modeloJuego;
 import java.util.LinkedList;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.logging.LogRecord;
+
 
 public class BlockNineModelo implements modeloJuego {
 
-    private static final int ESPACIO_JUEGO = 15;
-    private static final int AREA_JUEGO_ANCHO= 10;
-    private static final int AREA_JUEGO_LARGO = ESPACIO_JUEGO;
-    private static final int ESPACIO_AREA_PROXIMA = 4;
+    private static final String TAG = "TetrisGameModel";
 
-    private Puntos[][] mPuntos;
-    private Puntos[][] mPuntosJugandos;
-    private Puntos[][] mProximosPuntos;
+    private static final int GAME_SIZE = 15;
+    private static final int PLAYING_AREA_WIDTH = 10;
+    private static final int PLAYING_AREA_HEIGHT = GAME_SIZE;
+    private static final int UPCOMING_AREA_SIZE = 4;
 
-    private int mPuntaje;
-    private final AtomicBoolean mJuegoPausado = new AtomicBoolean();
-    private final AtomicBoolean mVolteando = new AtomicBoolean();
-    private final LinkedList<Puntos> mPuntajeCaida = new LinkedList<>();
+    private Puntos[][] mPoints;
+    private Puntos[][] mPlayingPoints;
+    private Puntos[][] mUpcomingPoints;
+    private int mScore;
+    private final AtomicBoolean mIsGamePaused = new AtomicBoolean();
+    private final AtomicBoolean mIsTurning = new AtomicBoolean();
+    private final LinkedList<Puntos> mFallingPoints = new LinkedList<>();
 
-    private final Handler mManipular = new Handler();
+    private PresenterCompletableObserver mGameOverObserver;
+    private PresenterObserver<Integer> mScoreUpdatedObserver;
 
-    private PresenterCompletableObserver mJuegoTerminadoObservar;
-    private PresenterObserver<Integer> mObservarPuntajeActulizado;
-    public BlockNineModelo(){
+    private final Handler mHandler = new Handler();
 
-    }
-
-    @Override
-    public void inicio() {
-        mPuntos = new Puntos[ESPACIO_JUEGO][ESPACIO_JUEGO];
-        for (int i = 0; i < ESPACIO_JUEGO; i++){
-             for (int j = 0; j < ESPACIO_JUEGO; j++){
-                 mPuntos[i][j] = new Puntos(j,i);
-
-             }
-        }
-        mPuntosJugandos = new Puntos[AREA_JUEGO_LARGO][AREA_JUEGO_ANCHO];
-        for (int i =0; i <AREA_JUEGO_LARGO; i++){
-            System.arraycopy(mPuntos[i],0, mPuntosJugandos[i], 0,AREA_JUEGO_ANCHO);
-        }
-        mProximosPuntos = new Puntos[ESPACIO_AREA_PROXIMA][ESPACIO_AREA_PROXIMA];
-        for(int i = 0; i<ESPACIO_AREA_PROXIMA; i++){
-            for (int j = 0; j<ESPACIO_AREA_PROXIMA; j++){
-                mProximosPuntos[i][j] = mPuntos [i + i][AREA_JUEGO_ANCHO + 1 + j];
-            }
-        }
-        for(int i = 0; i < AREA_JUEGO_LARGO; i++){
-            mPuntos[i][AREA_JUEGO_ANCHO].tipo = TipodePunto.LINEA_VERTICAL;
-        }
-        nuevoJuego();
-    }
-
-    @Override
-    public int obtenerEspacioJuego() {
-        return ESPACIO_JUEGO;
-    }
-
-    @Override
-    public void nuevoJuego() {
-    mPuntaje = 0;
-    for (int i = 0; i < AREA_JUEGO_LARGO; i++){
-        for (int j = 0; j < AREA_JUEGO_ANCHO; j++){
-             mPuntosJugandos[i][j].tipo = TipodePunto.VACIO;
-        }
-    }
-    mPuntajeCaida.clear();
-    generarProximoBlque();
-    }
-    private void generarProximoBlque(){
-        TipoBloque proximoBloque = TipoBloque.random();
-        for (int i = 0; i < ESPACIO_AREA_PROXIMA; i++){
-            for (int j = 0; j < ESPACIO_AREA_PROXIMA; j++){
-                mProximosPuntos[i][j].tipo = TipodePunto.VACIO;
-            }
-        }
-
-        switch (proximoBloque){
-            case L:
-                mProximosPuntos[1][1].tipo=TipodePunto.CAJA;
-                mProximosPuntos[2][1].tipo=TipodePunto.CAJA;
-                mProximosPuntos[3][1].tipo=TipodePunto.CAJA;
-                mProximosPuntos[3][2].tipo=TipodePunto.CAJA;
-                break;
-            case T:
-                mProximosPuntos[1][1].tipo=TipodePunto.CAJA;
-                mProximosPuntos[2][1].tipo=TipodePunto.CAJA;
-                mProximosPuntos[3][1].tipo=TipodePunto.CAJA;
-                mProximosPuntos[2][2].tipo=TipodePunto.CAJA;
-                break;
-            case CHAIR:
-                mProximosPuntos[1][1].tipo=TipodePunto.CAJA;
-                mProximosPuntos[2][1].tipo=TipodePunto.CAJA;
-                mProximosPuntos[2][2].tipo=TipodePunto.CAJA;
-                mProximosPuntos[3][2].tipo=TipodePunto.CAJA;
-                break;
-            case STICK:
-                mProximosPuntos[0][1].tipo=TipodePunto.CAJA;
-                mProximosPuntos[1][1].tipo=TipodePunto.CAJA;
-                mProximosPuntos[2][1].tipo=TipodePunto.CAJA;
-                mProximosPuntos[3][1].tipo=TipodePunto.CAJA;
-                break;
-            case SQUARE:
-                mProximosPuntos[1][1].tipo=TipodePunto.CAJA;
-                mProximosPuntos[1][2].tipo=TipodePunto.CAJA;
-                mProximosPuntos[2][1].tipo=TipodePunto.CAJA;
-                mProximosPuntos[2][2].tipo=TipodePunto.CAJA;
-                break;
-        }
-    }
-
-
-    @Override
-    public void iniciarJuego(PresenterObserver<Puntos[][]> dibujandoJuego) {
-        mJuegoPausado.set(false);
-        final long tiempodormido = 1000 /FPS;
-        new Thread(()->{long contar = 0;
-                        while (!mJuegoPausado.get()){
-                            try {
-                                Thread.sleep(tiempodormido);
-                            } catch (InterruptedException e){
-                                e.printStackTrace();
-                            }
-                            if(contar % SPEED == 0){
-                                if (mVolteando.get()){
-                                    continue;
-                                }
-                                siguiente();
-                                mManipular.post(()-> dibujandoJuego.observe(mPuntosJugandos));
-                            }
-                            contar++;
-                        }
-        }).start();
-    }
-
-    private synchronized void siguiente(){
-        actualizarPuntosCaida();
-        if (isNextMerget()){
-            if (estaAfuera()) {
-                if(mJuegoTerminadoObservar != null){
-                    mManipular.post(mJuegoTerminadoObservar::observe);
-                }
-             mJuegoPausado.set(true);
-                return;
-            }
-            int y = mPuntajeCaida.stream().mapToInt(p ->p.y).max().orElse(-1);
-            while (y >= 0 ){
-                boolean seApunta = true;
-                for (int i = 0; i < AREA_JUEGO_ANCHO; i++){
-                    Puntos punto = obtenerPuntosJugando(i,y);
-                    if (punto.tipo == TipodePunto.VACIO){
-                        seApunta = false;
-                        break;
-                    }
-                }
-                if(seApunta){
-                    mPuntaje++;
-                    if (mObservarPuntajeActulizado !=null){
-                        mManipular.post(()-> mObservarPuntajeActulizado.observe(mPuntaje));
-                    }
-                    LinkedList<Puntos> tmPuntos = new LinkedList<>();
-                    for (int i = 0; i<= y; i ++){
-                        for (int j = 0; j < AREA_JUEGO_ANCHO; j++){
-                            Puntos punto = obtenerPuntosJugando(j,i);
-                            if (punto.tipo ==TipodePunto.CAJA){
-                                punto.tipo = TipodePunto.VACIO;
-                                if(i != y){
-                                    tmPuntos.add(new Puntos(punto.x,punto.y + 1, TipodePunto.CAJA,false));
-                                }
-                            }
-                        }
-                    }
-                    tmPuntos.forEach(this::actualizarpuntosJuego);
-                }else{
-                    y--;
-                }
-            }
-            mPuntajeCaida.forEach(p -> p.puntodeCaida = false );
-            mPuntajeCaida.clear();
-        }else {
-            LinkedList<Puntos> tmPunto = new LinkedList<>();
-            for(Puntos puntoDeCaida:mPuntajeCaida){
-                puntoDeCaida.tipo=TipodePunto.VACIO;
-                puntoDeCaida.puntodeCaida = false;
-                tmPunto.add(new Puntos(puntoDeCaida.x, puntoDeCaida.y+1,TipodePunto.CAJA,true ));
-                mPuntajeCaida.clear();
-                mPuntajeCaida.addAll(tmPunto);
-                mPuntajeCaida.forEach(this::actualizarpuntosJuego);
-            }
-        }
-    }
-    private void actualizarPuntosCaida(){
-        if(mPuntajeCaida.isEmpty()) {
-            for (int i = 0; i < ESPACIO_AREA_PROXIMA; i++){
-                for (int j = 0; j < ESPACIO_AREA_PROXIMA; j++){
-                    if(mProximosPuntos[i][j].tipo == TipodePunto.CAJA){
-                        mPuntajeCaida.add(new Puntos(j +3,i -4, TipodePunto.CAJA,true));
-                    }
-                }
-            }
-            generarProximoBlque();
-        }
-    }
-
-    private boolean isNextMerget(){
-        for (Puntos puntajeCaida:mPuntajeCaida){
-            if (puntajeCaida.y + 1 >= 0 && (puntajeCaida.y==AREA_JUEGO_LARGO - 1||
-                    obtenerPuntosJugando(puntajeCaida.x,puntajeCaida.y + 1).puntosEstables())){
-                return true;
-            }
-
-        }
-        return false;
-    }
-    private boolean estaAfuera (){
-        for( Puntos puntajeCaida: mPuntajeCaida){
-            if(puntajeCaida.y <0){
-                return true;
-            }
-        }
-        return false;
-    }
-    private void actualizarpuntosJuego(Puntos puntos){
-        if (puntos.x>=0 && puntos.x < AREA_JUEGO_LARGO && puntos.y >= 0 && puntos.y < AREA_JUEGO_ANCHO){
-            mPuntos[puntos.x][puntos.y] = puntos;
-            mPuntosJugandos[puntos.y][puntos.x]= puntos;
-        }
-
-    }
-    private Puntos obtenerPuntosJugando(int x, int y ){
-        if(x >=0 && y >= 0 && x < AREA_JUEGO_ANCHO && y < AREA_JUEGO_LARGO){
-            return mPuntosJugandos[y][x];
-        }
-        return null;
-    }
-
-    @Override
-    public void pausarJuego() {
-        mJuegoPausado.set(true);
-    }
-
-    @Override
-    public void voltear(TurnoJuego voltear) {
-
-    }
-
-    @Override
-    public void enviarJuegoterminado(PresenterCompletableObserver juegoTerminadoActivado) {
- mJuegoTerminadoObservar = juegoTerminadoActivado;
-
-    }
-
-    @Override
-    public void enviarActualizacionPuntaje(PresenterObserver<Integer> actualizacionPuntajeActivada) {
-    mObservarPuntajeActulizado = actualizacionPuntajeActivada;
-    }
-
-    private enum TipoBloque{
+    private enum BrickType {
         L(0), T(1), CHAIR(2), STICK(3), SQUARE(4);
-        final int mValor;
+        final int value;
 
-        TipoBloque(int valor){
-            mValor = valor;
-            }
-        static TipoBloque delValor(int valor){
-            switch (valor){
+        BrickType(int value) {
+            this.value = value;
+        }
+
+        static BrickType fromValue(int value) {
+            switch (value) {
                 case 1:
                     return T;
                 case 2:
@@ -292,11 +62,381 @@ public class BlockNineModelo implements modeloJuego {
             }
         }
 
-        static TipoBloque random(){
+        static BrickType random() {
             Random random = new Random();
-            return delValor(random.nextInt(5));
+            return fromValue(random.nextInt(5));
         }
     }
 
+    @Override
+    public void init() {
+        mPoints = new Puntos[GAME_SIZE][GAME_SIZE];
+        for (int i = 0; i < GAME_SIZE; i++) {
+            for (int j = 0; j < GAME_SIZE; j++) {
+                mPoints[i][j] = new Puntos(j, i);
+            }
+        }
+        mPlayingPoints = new Puntos[PLAYING_AREA_HEIGHT][PLAYING_AREA_WIDTH];
+        for (int i = 0; i < PLAYING_AREA_HEIGHT; i++) {
+            System.arraycopy(mPoints[i], 0, mPlayingPoints[i], 0, PLAYING_AREA_WIDTH);
+        }
+        mUpcomingPoints = new Puntos[UPCOMING_AREA_SIZE][UPCOMING_AREA_SIZE];
+        for (int i = 0; i < UPCOMING_AREA_SIZE; i++) {
+            for (int j = 0; j < UPCOMING_AREA_SIZE; j++) {
+                mUpcomingPoints[i][j] = mPoints[1 + i][PLAYING_AREA_WIDTH + 1 + j];
+            }
+        }
+        for (int i = 0; i < PLAYING_AREA_HEIGHT; i++) {
+            mPoints[i][PLAYING_AREA_WIDTH].type = TipodePunto.VERTICAL_LINE;
+        }
+        newGame();
+    }
 
+    @Override
+    public int getGameSize() {
+        return GAME_SIZE;
+    }
+
+    @Override
+    public void newGame() {
+        mScore = 0;
+        for (int i = 0; i < PLAYING_AREA_HEIGHT; i++) {
+            for (int j = 0; j < PLAYING_AREA_WIDTH; j++) {
+                mPlayingPoints[i][j].type = TipodePunto.EMPTY;
+            }
+        }
+        mFallingPoints.clear();
+        generateUpcomingBrick();
+    }
+
+    private void generateUpcomingBrick() {
+        BrickType upcomingBrick = BrickType.random();
+        for (int i = 0; i < UPCOMING_AREA_SIZE; i++) {
+            for (int j = 0; j < UPCOMING_AREA_SIZE; j++) {
+                mUpcomingPoints[i][j].type = TipodePunto.EMPTY;
+            }
+        }
+        switch (upcomingBrick) {
+            case L:
+                mUpcomingPoints[1][1].type = TipodePunto.BOX;
+                mUpcomingPoints[2][1].type = TipodePunto.BOX;
+                mUpcomingPoints[3][1].type = TipodePunto.BOX;
+                mUpcomingPoints[3][2].type = TipodePunto.BOX;
+                break;
+            case T:
+                mUpcomingPoints[2][1].type = TipodePunto.BOX;
+                mUpcomingPoints[1][1].type = TipodePunto.BOX;
+                mUpcomingPoints[3][1].type = TipodePunto.BOX;
+                mUpcomingPoints[2][2].type = TipodePunto.BOX;
+                break;
+            case CHAIR:
+                mUpcomingPoints[1][1].type = TipodePunto.BOX;
+                mUpcomingPoints[2][1].type = TipodePunto.BOX;
+                mUpcomingPoints[2][2].type = TipodePunto.BOX;
+                mUpcomingPoints[3][2].type = TipodePunto.BOX;
+                break;
+            case STICK:
+                mUpcomingPoints[0][1].type = TipodePunto.BOX;
+                mUpcomingPoints[1][1].type = TipodePunto.BOX;
+                mUpcomingPoints[2][1].type = TipodePunto.BOX;
+                mUpcomingPoints[3][1].type = TipodePunto.BOX;
+                break;
+            case SQUARE:
+                mUpcomingPoints[1][1].type = TipodePunto.BOX;
+                mUpcomingPoints[1][2].type = TipodePunto.BOX;
+                mUpcomingPoints[2][1].type = TipodePunto.BOX;
+                mUpcomingPoints[2][2].type = TipodePunto.BOX;
+                break;
+        }
+
+    }
+
+    @Override
+    public void startGame(PresenterObserver<Puntos[][]> onGameDrawnListener) {
+        mIsGamePaused.set(false);
+        final long sleepTime = 1000 / FPS;
+        new Thread(() -> {
+            long count = 0;
+            while (!mIsGamePaused.get()) {
+                try {
+                    Thread.sleep(sleepTime);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                if (count % SPEED == 0) {
+                    if (mIsTurning.get()) {
+                        continue;
+                    }
+                    next();
+                    mHandler.post(() -> onGameDrawnListener.observe(mPoints));
+                }
+                count++;
+            }
+        }).start();
+    }
+
+    private synchronized void next() {
+        updateFallingPoints();
+
+        if (isNextMerged()) {
+            if (isOutSide()) {
+                if (mGameOverObserver != null) {
+                    mHandler.post(mGameOverObserver::onNext);
+                }
+                mIsGamePaused.set(true);
+                return;
+            }
+            int y = mFallingPoints.stream().mapToInt(p -> p.y).max().orElse(-1);
+            while (y >= 0) {
+                boolean isScored = true;
+                for (int i = 0; i < PLAYING_AREA_WIDTH; i++) {
+                    Puntos point = getPlayingPoint(i, y);
+                    if (point.type == TipodePunto.EMPTY) {
+                        isScored = false;
+                        break;
+                    }
+                }
+                if (isScored) {
+                    mScore++;
+                    if (mScoreUpdatedObserver != null) {
+                        mHandler.post(() -> mScoreUpdatedObserver.observe(mScore));
+                    }
+                    LinkedList<Puntos> tmPoints = new LinkedList<>();
+                    for (int i = 0; i <= y; i++) {
+                        for (int j = 0; j < PLAYING_AREA_WIDTH; j++) {
+                            Puntos point = getPlayingPoint(j, i);
+                            if (point.type == TipodePunto .BOX) {
+                                point.type = TipodePunto.EMPTY;
+                                if (i != y) {
+                                    tmPoints.add(new Puntos(point.x, point.y + 1, TipodePunto.BOX, false));
+                                }
+
+                            }
+                        }
+                    }
+                    tmPoints.forEach(this::updatePlayingPoint);
+                } else {
+                    y--;
+                }
+            }
+            mFallingPoints.forEach(p -> p.isFallingPoint = false);
+            mFallingPoints.clear();
+        } else {
+            LinkedList<Puntos> tmPoints = new LinkedList<>();
+            for (Puntos fallingPoint : mFallingPoints) {
+                fallingPoint.type = TipodePunto.EMPTY;
+                fallingPoint.isFallingPoint = false;
+                tmPoints.add(new Puntos(fallingPoint.x, fallingPoint.y + 1, TipodePunto.BOX, true));
+            }
+            mFallingPoints.clear();
+            mFallingPoints.addAll(tmPoints);
+            mFallingPoints.forEach(this::updatePlayingPoint);
+        }
+
+    }
+
+    private boolean isNextMerged() {
+        for (Puntos fallingPoint : mFallingPoints) {
+            if (fallingPoint.y + 1 >= 0 && (fallingPoint.y == PLAYING_AREA_HEIGHT - 1 ||
+                    getPlayingPoint(fallingPoint.x, fallingPoint.y + 1).isStablePoint())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isOutSide() {
+        for (Puntos fallingPoint : mFallingPoints) {
+            if (fallingPoint.y < 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void updatePlayingPoint(Puntos point) {
+        if (point.x >= 0 && point.x < PLAYING_AREA_WIDTH &&
+                point.y >= 0 && point.y < PLAYING_AREA_HEIGHT) {
+            mPoints[point.y][point.x] = point;
+            mPlayingPoints[point.y][point.x] = point;
+        }
+    }
+
+    private Puntos getPlayingPoint(int x, int y) {
+        if (x >= 0 && y >= 0 && x < PLAYING_AREA_WIDTH && y < PLAYING_AREA_HEIGHT) {
+            return mPlayingPoints[y][x];
+        }
+        return null;
+    }
+
+    private void updateFallingPoints() {
+        if (mFallingPoints.isEmpty()) {
+            for (int i = 0; i < UPCOMING_AREA_SIZE; i++) {
+                for (int j = 0; j < UPCOMING_AREA_SIZE; j++) {
+                    if (mUpcomingPoints[i][j].type == TipodePunto.BOX) {
+                        mFallingPoints.add(new Puntos(j + 3, i - 4, TipodePunto.BOX, true));
+                    }
+                }
+            }
+            generateUpcomingBrick();
+        }
+    }
+
+    @Override
+    public void pauseGame() {
+        mIsGamePaused.set(true);
+    }
+
+    @Override
+    public void turn(TurnoJuego turn) {
+        if (mIsGamePaused.get() || mIsTurning.get()) {
+            return;
+        }
+        mIsTurning.set(true);
+        LinkedList<Puntos> tmPoints;
+        boolean canTurn;
+        switch (turn) {
+            case LEFT:
+                updateFallingPoints();
+                canTurn = true;
+                for (Puntos fallingPoint : mFallingPoints) {
+                    if (fallingPoint.y >= 0 && (fallingPoint.x == 0 ||
+                            getPlayingPoint(fallingPoint.x - 1, fallingPoint.y).isStablePoint())) {
+                        canTurn = false;
+                        break;
+                    }
+                }
+                if (canTurn) {
+                    tmPoints = new LinkedList<>();
+                    for (Puntos fallingPoint : mFallingPoints) {
+                        tmPoints.add(new Puntos(fallingPoint.x - 1, fallingPoint.y, TipodePunto.BOX, true));
+                        fallingPoint.type = TipodePunto.EMPTY;
+                        fallingPoint.isFallingPoint = false;
+                    }
+                    mFallingPoints.clear();
+                    mFallingPoints.addAll(tmPoints);
+                    mFallingPoints.forEach(this::updatePlayingPoint);
+                }
+                break;
+            case RIGHT:
+                updateFallingPoints();
+                canTurn = true;
+                for (Puntos fallingPoint : mFallingPoints) {
+                    if (fallingPoint.y >= 0 && (fallingPoint.x == PLAYING_AREA_WIDTH - 1 ||
+                            getPlayingPoint(fallingPoint.x + 1, fallingPoint.y).isStablePoint())) {
+                        canTurn = false;
+                        break;
+                    }
+                }
+                if (canTurn) {
+                    tmPoints = new LinkedList<>();
+                    for (Puntos fallingPoint : mFallingPoints) {
+                        tmPoints.add(new Puntos(fallingPoint.x + 1, fallingPoint.y, TipodePunto.BOX, true));
+                        fallingPoint.type = TipodePunto.EMPTY;
+                        fallingPoint.isFallingPoint = false;
+                    }
+                    mFallingPoints.clear();
+                    mFallingPoints.addAll(tmPoints);
+                    mFallingPoints.forEach(this::updatePlayingPoint);
+                }
+                break;
+            case DOWN:
+                next();
+                break;
+            case FIRE:
+                rotateFallingPoints();
+            case UP:
+            default:
+                break;
+        }
+        mIsTurning.set(false);
+    }
+
+    private void rotateFallingPoints() {
+        updateFallingPoints();
+        int left = mFallingPoints.stream().mapToInt(p -> p.x).min().orElse(-1);
+        int right = mFallingPoints.stream().mapToInt(p -> p.x).max().orElse(-1);
+        int top = mFallingPoints.stream().mapToInt(p -> p.y).min().orElse(-1);
+        int bottom = mFallingPoints.stream().mapToInt(p -> p.y).max().orElse(-1);
+        int size = Math.max(right - left, bottom - top) + 1;
+        if (rotatePoints(left, top, size)) {
+            return;
+        }
+        if (rotatePoints(right - size + 1, top, size)) {
+            return;
+        }
+        if (rotatePoints(left, bottom - size + 1, size)) {
+            return;
+        }
+        rotatePoints(right - size + 1, bottom - size + 1, size);
+    }
+
+    public boolean rotatePoints(int x, int y, int size) {
+        Log.i(TAG, "rotatePoints: x = " + x + ", y = " + y + ", size = " + size);
+        if (x + size - 1 < 0 || x + size - 1 >= PLAYING_AREA_WIDTH) {
+            return false;
+        }
+        boolean canRotate = true;
+        Puntos[][] points = new Puntos[size][size];
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                Puntos point = getPlayingPoint(j + x, i + y);
+                if (point == null) {
+                    final int tmX = j + x;
+                    final int tmY = i + y;
+                    point = mFallingPoints.stream()
+                            .filter(p -> p.x == tmX && p.y == tmY)
+                            .findFirst()
+                            .orElse(new Puntos(j + x, i + y));
+                }
+                if (point.isStablePoint() && getPlayingPoint(x + size - 1 - i, y + j).isFallingPoint) {
+                    canRotate = false;
+                    break;
+                }
+                if (point.isFallingPoint) {
+                    Log.i(TAG, "rotatePoints: Falling point: " + point.x + ", " + point.y + "; type: " + point.type);
+                }
+                points[i][j] = new Puntos(x + size - 1 - i, y + j, point.type, point.isFallingPoint);
+            }
+            if (!canRotate) {
+                break;
+            }
+        }
+        for (Puntos point: mFallingPoints) {
+            Log.i(TAG, "rotatePoints: Falling point 2: " + point.x + ", " + point.y + ", type = " + point.type);
+        }
+        if (!canRotate) {
+            return false;
+        }
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                Puntos point = getPlayingPoint(i + y, j + x);
+                if (point == null) {
+                    continue;
+                }
+                point.type = TipodePunto.EMPTY;
+            }
+        }
+        mFallingPoints.clear();
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                updatePlayingPoint(points[i][j]);
+                if (points[i][j].isFallingPoint) {
+                    mFallingPoints.add(points[i][j]);
+                }
+            }
+        }
+        Log.i(TAG, "rotatePoints: falling points size = " + mFallingPoints.size());
+        return true;
+    }
+
+    @Override
+    public void setGameOverListener(PresenterCompletableObserver onGameOverListener) {
+        mGameOverObserver = onGameOverListener;
+    }
+
+    @Override
+    public void setScoreUpdatedListener(PresenterObserver<Integer> onScoreUpdatedListener) {
+        mScoreUpdatedObserver = onScoreUpdatedListener;
+    }
 }

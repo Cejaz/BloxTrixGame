@@ -4,12 +4,13 @@ public interface modeloJuego {
 
     int FPS = 60;
     int SPEED = 25;
-    void inicio();
-    int obtenerEspacioJuego();
-    void nuevoJuego();
-    void iniciarJuego(PresenterObserver<Puntos[][]> dibujandoJuego);
-    void pausarJuego();
-    void voltear(TurnoJuego voltear);
-    void enviarJuegoterminado(PresenterCompletableObserver juegoTerminadoActivado);
-    void enviarActualizacionPuntaje(PresenterObserver<Integer> actualizacionPuntajeActivada);
+    void init();
+    int getGameSize();
+    void newGame();
+    void startGame(PresenterObserver<Puntos[][]> onGameDrawnListener);
+    void pauseGame();
+    void turn(TurnoJuego turn);
+    void setGameOverListener(PresenterCompletableObserver onGameOverListener);
+    void setScoreUpdatedListener(PresenterObserver<Integer> onScoreUpdatedListener);
+
 }

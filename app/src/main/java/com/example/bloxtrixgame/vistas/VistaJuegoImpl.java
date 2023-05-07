@@ -10,43 +10,38 @@ import com.example.bloxtrixgame.presentacion.vistajuego;
 
 public class VistaJuegoImpl implements vistajuego {
 
-    private final marcojuego mMarcoJuego;
-    private final TextView mTextoPuntajeJuego;
-    private final TextView mTextoEstadoJuego;
-    private Button mBotonJuego;
+    private final marcojuego mGameFrame;
+    private final TextView mGameScoreText;
+    private final TextView mGameStatusText;
+    private final Button mGameCtlBtn;
 
-    VistaJuegoImpl(marcojuego marcoJuego, TextView textoPuntajeJuego, TextView textoEstadoJuego,Button botonJuego){
-        mMarcoJuego = marcoJuego;
-        mTextoPuntajeJuego = textoPuntajeJuego;
-        mTextoEstadoJuego = textoEstadoJuego;
-        mBotonJuego = botonJuego;
+    VistaJuegoImpl(marcojuego gameFrame, TextView gameScoreText, TextView gameStatusText, Button gameCtlBtn) {
+        mGameFrame = gameFrame;
+        mGameScoreText = gameScoreText;
+        mGameStatusText = gameStatusText;
+        mGameCtlBtn = gameCtlBtn;
     }
 
     @Override
-    public void iniciar(int espacioJuego) {
-        mMarcoJuego.inicio(espacioJuego);
-
+    public void init(int gameSize) {
+        mGameFrame.init(gameSize);
     }
 
     @Override
-    public void dibujar(Puntos[][] puntos) {
-
-        mMarcoJuego.enviarPuntos(puntos);
-        mMarcoJuego.invalidate();
-
+    public void draw(Puntos[][] points) {
+        mGameFrame.setPoints(points);
+        mGameFrame.invalidate();
     }
 
     @Override
-    public void enviarPuntaje(int puntaje) {
-        mTextoPuntajeJuego.setText("Puntaje:" + puntaje);
-
+    public void setScore(int score) {
+        mGameScoreText.setText("Score: " + score);
     }
 
     @Override
-    public void enviarEstado(EstadoJuego estado) {
-        mTextoEstadoJuego.setText(estado.ObtenerValue());
-        mTextoEstadoJuego.setVisibility(estado == EstadoJuego.JUGANDO ? View.VISIBLE : View.INVISIBLE);
-        mBotonJuego.setText(estado == EstadoJuego.JUGANDO ? "Pausa":"Iniciar");
+    public void setStatus(EstadoJuego status) {
+        mGameStatusText.setText(status.getValue());
+        mGameStatusText.setVisibility(status == EstadoJuego.PLAYING ? View.INVISIBLE : View.VISIBLE);
+        mGameCtlBtn.setText(status == EstadoJuego.PLAYING ? "Pause" : "Start");
     }
-
 }

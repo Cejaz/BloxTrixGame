@@ -24,73 +24,71 @@ public class marcojuego extends View {
         super(context, attrs, defStyleAttr);
     }
 
-    public marcojuego(Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-    }
-
-    private Puntos[][] mPuntos = null;
-    private int mEspacioCaja = 0;
-    private int mRellenoCaja = 0;
-    private int mEspacioJuego = 0;
+    private Puntos[][] mPoints;
+    private int mBoxSize;
+    private int mBoxPadding;
+    private int mGameSize;
 
     private final Paint mPaint = new Paint();
 
-    public void inicio(int espacioJuego){
-        mEspacioJuego = espacioJuego;
-        getViewTreeObserver().addOnGlobalLayoutListener(() ->{
-            mRellenoCaja = Math.min(getWidth(), getHeight()) / mEspacioJuego;
-            mRellenoCaja = mRellenoCaja / 10;
+    public void init(int gameSize) {
+        mGameSize = gameSize;
+        getViewTreeObserver().addOnGlobalLayoutListener(() -> {
+            mBoxSize = Math.min(getWidth(), getHeight()) / mGameSize;
+            mBoxPadding = mBoxSize / 10;
         });
     }
 
-    void enviarPuntos(Puntos [][] puntos){
-        mPuntos = puntos;
+    void setPoints(Puntos[][] points) {
+        mPoints = points;
     }
 
-    private Puntos obtenerPuntos(int x, int y){
-        return mPuntos[y][x];
+    private Puntos getPoint(int x, int y) {
+        return mPoints[y][x];
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         mPaint.setColor(Color.BLACK);
-        canvas.drawRect(0,0, mEspacioJuego, mEspacioJuego, mPaint);
-        if(mPuntos == null ) {
+        canvas.drawRect(0, 0, mGameSize, mGameSize, mPaint);
+        if (mPoints == null) {
             return;
         }
-        for (int i = 0; i < mEspacioJuego; i++){
-            for (int j=0; j<mEspacioJuego; j++){
-                Puntos puntos = obtenerPuntos(i, j);
-                int izquierda, derecha, arriba, abajo, boton;
+        for (int i = 0; i < mGameSize; i++) {
+            for (int j = 0; j < mGameSize; j++) {
+                Puntos point = getPoint(i, j);
+                int left, right, top, bottom;
                 mPaint.setColor(Color.WHITE);
-                switch (puntos.tipo) {
-                    case CAJA:
-                        izquierda = mEspacioCaja * puntos.x + mRellenoCaja;
-                        derecha = izquierda + mEspacioCaja - mRellenoCaja;
-                        arriba = mEspacioCaja * puntos.y + mRellenoCaja;
-                        boton = arriba + mEspacioCaja - mRellenoCaja;
+                switch (point.type) {
+                    case BOX:
+                        left = mBoxSize * point.x + mBoxPadding;
+                        right = left + mBoxSize - mBoxPadding;
+                        top = mBoxSize * point.y + mBoxPadding;
+                        bottom = top + mBoxSize - mBoxPadding;
                         break;
-                        case LINEA_VERTICAL:
-                            izquierda = mEspacioCaja * puntos.x + mRellenoCaja;;
-                            derecha = izquierda + mRellenoCaja;
-                            arriba = mEspacioCaja * puntos.y;
-                            boton = arriba + mEspacioCaja;
+                    case VERTICAL_LINE:
+                        left = mBoxSize * point.x;
+                        right = left + mBoxPadding;
+                        top = mBoxSize * point.y;
+                        bottom = top + mBoxSize;
                         break;
-                    case LINEA_HORIZONTAL:
-                        izquierda = mEspacioCaja + puntos.y;
-                        derecha = izquierda + mEspacioCaja;
-                        arriba = mEspacioCaja * puntos.y;
-                        boton = arriba + mRellenoCaja;
+                    case HORIZONTAL_LINE:
+                        left = mBoxSize * point.y;
+                        right = left + mBoxSize;
+                        top = mBoxSize * point.y;
+                        bottom = top + mBoxPadding;
                         break;
-                    case VACIO:
+                    case EMPTY:
                     default:
-                        izquierda = mEspacioCaja * puntos.x;
-                        derecha = izquierda +mEspacioCaja;
-                        arriba = mEspacioCaja * puntos.y;
-                        boton = arriba + mEspacioCaja;
+                        left = mBoxSize * point.x;
+                        right = left + mBoxSize;
+                        top = mBoxSize * point.y;
+                        bottom = top + mBoxSize;
+                        mPaint.setColor(Color.BLACK);
+                        break;
                 }
-                canvas.drawRect(izquierda,arriba,derecha,boton,mPaint);
+                canvas.drawRect(left, top, right, bottom, mPaint);
             }
         }
     }

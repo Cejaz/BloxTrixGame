@@ -2,53 +2,53 @@ package com.example.bloxtrixgame.presentacion;
 
 public class presentacionjuego {
 
-    private vistajuego mvistajuego;
-    private EstadoJuego mEstado;
-    private modeloJuego mmodeloJuego;
+    private modeloJuego mGameModel;
+    private vistajuego mGameView;
+    private EstadoJuego mStatus;
 
-    public void enviaVistaJuego(vistajuego Juegovista){
-        mvistajuego = Juegovista;
+    public void setGameModel(modeloJuego gameModel) {
+        mGameModel = gameModel;
     }
 
-    public void enviaModeloJuego(modeloJuego Juegomodelo){
-        mmodeloJuego=Juegomodelo;
+    public void setGameView(vistajuego gameView) {
+        mGameView = gameView;
     }
 
-    public void iniciar(){
-        mmodeloJuego.inicio();
-        mvistajuego.iniciar(mmodeloJuego.obtenerEspacioJuego());
-        mmodeloJuego.enviarJuegoterminado(()-> enviarEstado(EstadoJuego.TERMINADO));
-        mmodeloJuego.enviarActualizacionPuntaje((mvistajuego::enviarPuntaje));
-        enviarEstado(EstadoJuego.INICIO);
+    public void init() {
+        mGameModel.init();
+        mGameView.init(mGameModel.getGameSize());
+        mGameModel.setGameOverListener(() -> setStatus(EstadoJuego.OVER));
+        mGameModel.setScoreUpdatedListener(mGameView::setScore);
+        setStatus(EstadoJuego.START);
     }
 
-    public void voltear(TurnoJuego voltear){
-        mmodeloJuego.voltear(voltear);
+    public void turn(TurnoJuego turn) {
+        mGameModel.turn(turn);
     }
 
-    public void cambiarEstado(){
-        if (mEstado == EstadoJuego.JUGANDO){
-            juegoPausado();
-        }else {
-            juegoIniciado();
+    public void changeStatus() {
+        if (mStatus == EstadoJuego.PLAYING) {
+            pauseGame();
+        } else {
+            startGame();
         }
     }
 
-    private void juegoPausado(){
-        enviarEstado(EstadoJuego.PAUSA);
-        mmodeloJuego.pausarJuego();
+    private void pauseGame() {
+        setStatus(EstadoJuego.PAUSED);
+        mGameModel.pauseGame();
     }
 
-    private void juegoIniciado(){
-        enviarEstado(EstadoJuego.INICIO);
-        mmodeloJuego.iniciarJuego(mvistajuego::dibujar);
+    private void startGame() {
+        setStatus(EstadoJuego.PLAYING);
+        mGameModel.startGame(mGameView::draw);
     }
-    private void enviarEstado(EstadoJuego estado){
-        if(mEstado == EstadoJuego.TERMINADO || mEstado ==EstadoJuego.INICIO){
-            mmodeloJuego.nuevoJuego();
+
+    private void setStatus(EstadoJuego status) {
+        if (mStatus == EstadoJuego.OVER || status == EstadoJuego.START) {
+            mGameModel.newGame();
         }
-        mEstado = estado;
-        mvistajuego.enviarEstado(estado);
-
+        mStatus = status;
+        mGameView.setStatus(status);
     }
 }

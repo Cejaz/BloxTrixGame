@@ -3,25 +3,25 @@ package com.example.bloxtrixgame.presentacion;
 import android.graphics.Point;
 
 public class Puntos {
-    public final int x,y;
-    public boolean puntodeCaida;
-    public TipodePunto tipo;
+    public final int x, y;
+    public boolean isFallingPoint;
+    public TipodePunto type;
 
-    public Puntos(int x, int y){
-        this.x=x;
-        this.y=y;
-        this.tipo = TipodePunto.VACIO;
-        this.puntodeCaida = false;
-
+    public Puntos(int x, int y) {
+        this.x = x;
+        this.y = y;
+        this.type = TipodePunto.EMPTY;
+        this.isFallingPoint = false;
     }
 
-    public Puntos(int x,int y, TipodePunto tipo, boolean puntodeCaida){
-        this.x=x;
-        this.y=y;
-        this.tipo = tipo;
-        this.puntodeCaida = puntodeCaida;
+    public Puntos(int x, int y, TipodePunto type, boolean isFallingPoint) {
+        this.x = x;
+        this.y = y;
+        this.type = type;
+        this.isFallingPoint = isFallingPoint;
     }
-    public boolean puntosEstables(){
-        return !puntodeCaida && tipo == TipodePunto.CAJA;
+
+    public boolean isStablePoint() {
+        return !isFallingPoint && type == TipodePunto.BOX;
     }
 }
