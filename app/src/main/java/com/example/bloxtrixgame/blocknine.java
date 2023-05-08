@@ -7,47 +7,45 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.example.bloxtrixgame.modelos.ModeloJuegoFactory;
 import com.example.bloxtrixgame.modelos.TipoJuego;
-import com.example.bloxtrixgame.presentacion.ModeloJuegoFactory;
 import com.example.bloxtrixgame.presentacion.TurnoJuego;
 import com.example.bloxtrixgame.presentacion.presentacionjuego;
 import com.example.bloxtrixgame.vistas.VistaJuegoFabrica;
 import com.example.bloxtrixgame.vistas.marcojuego;
 
-@SuppressLint("MissingInflatedId")
 public class blocknine extends AppCompatActivity {
+
+    private static final String TAG = "MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_blocknine);
 
-        marcojuego marcoJuego = findViewById(R.id.contenedorjuego);
-        TextView textoPuntajeJuego = findViewById(R.id.puntaje);
-        TextView textoEstadoJuego = findViewById(R.id.estado);
-        Button botonJuego = findViewById(R.id.botonjuego_ctl);
+        marcojuego gameFrame = findViewById(R.id.contenedorjuego);
+        TextView gameScoreText = findViewById(R.id.puntaje);
+        TextView gameStatusText = findViewById(R.id.estado);
+        Button gameCtlBtn = findViewById(R.id.botonjuego_ctl);
 
-        presentacionjuego juegoPresentacion = new presentacionjuego();
-        juegoPresentacion.enviaModeloJuego(ModeloJuegoFactory.nuevoModeloJuego(TipoJuego.BLOCKNINE));
-        juegoPresentacion.enviaVistaJuego(VistaJuegoFabrica.vistaNuevoJuego(marcoJuego,textoPuntajeJuego,
-                textoEstadoJuego,botonJuego));
+        presentacionjuego gamePresenter = new presentacionjuego();
+        gamePresenter.setGameModel(ModeloJuegoFactory.newGameModel(TipoJuego.BLOCKNINE));
+        gamePresenter.setGameView(VistaJuegoFabrica.newGameView(gameFrame, gameScoreText, gameStatusText, gameCtlBtn));
 
-        Button arriba = findViewById(R.id.arriba);
-        Button abajo = findViewById(R.id.down);
-        Button izquierda = findViewById(R.id.letf);
-        Button derecha = findViewById(R.id.derecho);
-        Button fire = findViewById(R.id.fire_bton);
+        Button upBtn = findViewById(R.id.arriba);
+        Button downBtn = findViewById(R.id.down);
+        Button leftBtn = findViewById(R.id.letf);
+        Button rightBtn = findViewById(R.id.derecho);
+        Button fireBtn = findViewById(R.id.fire_bton);
 
-        arriba.setOnClickListener(v -> juegoPresentacion.voltear(TurnoJuego.ARRIBA));
-        abajo.setOnClickListener(v -> juegoPresentacion.voltear(TurnoJuego.ABAJO));
-        izquierda.setOnClickListener(v -> juegoPresentacion.voltear(TurnoJuego.IZQUIERDA));
-        derecha.setOnClickListener(v -> juegoPresentacion.voltear(TurnoJuego.DERECHA));
-        fire.setOnClickListener(v -> juegoPresentacion.voltear(TurnoJuego.FIRE));
+        upBtn.setOnClickListener(v -> gamePresenter.turn(TurnoJuego.UP));
+        downBtn.setOnClickListener(v -> gamePresenter.turn(TurnoJuego.DOWN));
+        leftBtn.setOnClickListener(v -> gamePresenter.turn(TurnoJuego.LEFT));
+        rightBtn.setOnClickListener(v -> gamePresenter.turn(TurnoJuego.RIGHT));
+        fireBtn.setOnClickListener(v -> gamePresenter.turn(TurnoJuego.FIRE));
 
-        botonJuego.setOnClickListener(v -> juegoPresentacion.cambiarEstado());
-
-        juegoPresentacion.iniciar();
-
+        gameCtlBtn.setOnClickListener(v -> gamePresenter.changeStatus());
+        gamePresenter.init();
 
     }
 }

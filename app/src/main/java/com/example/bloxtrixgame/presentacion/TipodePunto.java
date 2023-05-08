@@ -2,5 +2,5 @@ package com.example.bloxtrixgame.presentacion;
 
 public enum TipodePunto {
 
-    VACIO, CAJA, LINEA_VERTICAL, LINEA_HORIZONTAL
+    EMPTY, BOX, VERTICAL_LINE, HORIZONTAL_LINE
 }

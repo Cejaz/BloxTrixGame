@@ -2,18 +2,19 @@ package com.example.bloxtrixgame.presentacion;
 
 public enum EstadoJuego {
 
-    INICIO("INICIO"),
-    JUGANDO("JUGANDO"),
-    TERMINADO("JUEGO TERMINADO"),
-    PAUSA("JUEGO PAUSADO");
+    START("START"),
+    PLAYING("PLAYING"),
+    OVER("GAME OVER"),
+    PAUSED("GAME PAUSED");
 
-    private final String mValue;
+    private final String value;
 
-    EstadoJuego(String value){
-        mValue=value;
+    EstadoJuego(String value) {
+        this.value = value;
     }
 
-    public String ObtenerValue(){
-        return mValue;
+    public String getValue() {
+        return value;
     }
 }
+
