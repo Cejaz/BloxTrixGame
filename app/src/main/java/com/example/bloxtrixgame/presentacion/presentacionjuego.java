@@ -1,5 +1,9 @@
 package com.example.bloxtrixgame.presentacion;
 
+import android.widget.Button;
+
+import com.example.bloxtrixgame.R;
+
 public class presentacionjuego {
 
     private modeloJuego mGameModel;
@@ -42,6 +46,12 @@ public class presentacionjuego {
     private void startGame() {
         setStatus(EstadoJuego.PLAYING);
         mGameModel.startGame(mGameView::draw);
+    }
+
+    public void restartGame(){
+        mGameView.setScore(0);
+        mGameModel.newGame();
+        startGame();
     }
 
     private void setStatus(EstadoJuego status) {

@@ -8,7 +8,7 @@ public class VistaJuegoFabrica {
     private VistaJuegoFabrica() {
     }
 
-    public static vistajuego newGameView(marcojuego gameFrame, TextView gameScoreText, TextView gameStatusText, Button gameCtlBtn) {
-        return new VistaJuegoImpl(gameFrame, gameScoreText, gameStatusText, gameCtlBtn);
+    public static vistajuego newGameView(marcojuego gameFrame, TextView gameScoreText, TextView gameStatusText, Button gameCtlBtn, Button mGameRestBtn, Button homeCtlBtn) {
+        return new VistaJuegoImpl(gameFrame, gameScoreText, gameStatusText, gameCtlBtn, mGameRestBtn, homeCtlBtn);
     }
 }

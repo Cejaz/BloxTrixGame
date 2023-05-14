@@ -14,12 +14,16 @@ public class VistaJuegoImpl implements vistajuego {
     private final TextView mGameScoreText;
     private final TextView mGameStatusText;
     private final Button mGameCtlBtn;
+    private final Button mGameRestBtn;
+    private final Button mGamehomeBtn;
 
-    VistaJuegoImpl(marcojuego gameFrame, TextView gameScoreText, TextView gameStatusText, Button gameCtlBtn) {
+    VistaJuegoImpl(marcojuego gameFrame, TextView gameScoreText, TextView gameStatusText, Button gameCtlBtn, Button GameRestBtn, Button homeCtlBtn) {
         mGameFrame = gameFrame;
         mGameScoreText = gameScoreText;
         mGameStatusText = gameStatusText;
         mGameCtlBtn = gameCtlBtn;
+        mGameRestBtn = GameRestBtn;
+        mGamehomeBtn = homeCtlBtn;
     }
 
     @Override
@@ -43,5 +47,7 @@ public class VistaJuegoImpl implements vistajuego {
         mGameStatusText.setText(status.getValue());
         mGameStatusText.setVisibility(status == EstadoJuego.PLAYING ? View.INVISIBLE : View.VISIBLE);
         mGameCtlBtn.setText(status == EstadoJuego.PLAYING ? "Pause" : "Start");
+        mGameRestBtn.setVisibility(status == EstadoJuego.PAUSED ? View.VISIBLE : View.INVISIBLE);
+        mGamehomeBtn.setVisibility(status == EstadoJuego.PAUSED ? View.VISIBLE : View.INVISIBLE);
     }
 }
