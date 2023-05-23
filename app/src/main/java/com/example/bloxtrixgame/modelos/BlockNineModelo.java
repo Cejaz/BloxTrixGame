@@ -39,7 +39,7 @@ public class BlockNineModelo implements modeloJuego {
     private final Handler mHandler = new Handler();
 
     private enum BrickType {
-        L(0), T(1), CHAIR(2), STICK(3), SQUARE(4);
+        L(0), T(1), S(2), STICK(3), SQUARE(4), Z(5),J(6);
         final int value;
 
         BrickType(int value) {
@@ -51,11 +51,15 @@ public class BlockNineModelo implements modeloJuego {
                 case 1:
                     return T;
                 case 2:
-                    return CHAIR;
+                    return S;
                 case 3:
                     return STICK;
                 case 4:
                     return SQUARE;
+                case 5:
+                    return Z;
+                case 6:
+                    return J;
                 case 0:
                 default:
                     return L;
@@ -122,6 +126,7 @@ public class BlockNineModelo implements modeloJuego {
                 mUpcomingPoints[2][1].type = TipodePunto.BOX;
                 mUpcomingPoints[3][1].type = TipodePunto.BOX;
                 mUpcomingPoints[3][2].type = TipodePunto.BOX;
+
                 break;
             case T:
                 mUpcomingPoints[2][1].type = TipodePunto.BOX;
@@ -129,7 +134,7 @@ public class BlockNineModelo implements modeloJuego {
                 mUpcomingPoints[3][1].type = TipodePunto.BOX;
                 mUpcomingPoints[2][2].type = TipodePunto.BOX;
                 break;
-            case CHAIR:
+            case S:
                 mUpcomingPoints[1][1].type = TipodePunto.BOX;
                 mUpcomingPoints[2][1].type = TipodePunto.BOX;
                 mUpcomingPoints[2][2].type = TipodePunto.BOX;
@@ -141,6 +146,19 @@ public class BlockNineModelo implements modeloJuego {
                 mUpcomingPoints[2][1].type = TipodePunto.BOX;
                 mUpcomingPoints[3][1].type = TipodePunto.BOX;
                 break;
+            case J:
+                mUpcomingPoints[1][1].type = TipodePunto.BOX;
+                mUpcomingPoints[2][1].type = TipodePunto.BOX;
+                mUpcomingPoints[3][1].type = TipodePunto.BOX;
+                mUpcomingPoints[3][0].type = TipodePunto.BOX;
+                break;
+            case Z:
+                mUpcomingPoints[1][0].type = TipodePunto.BOX;
+                mUpcomingPoints[1][1].type = TipodePunto.BOX;
+                mUpcomingPoints[2][1].type = TipodePunto.BOX;
+                mUpcomingPoints[2][2].type = TipodePunto.BOX;
+                break;
+
             case SQUARE:
                 mUpcomingPoints[1][1].type = TipodePunto.BOX;
                 mUpcomingPoints[1][2].type = TipodePunto.BOX;
