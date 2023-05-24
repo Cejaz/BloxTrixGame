@@ -28,8 +28,11 @@ public class VistaJuegoImpl implements vistajuego {
 
     @Override
     public void init(int gameSize) {
-        mGameFrame.init(gameSize);
+        int gameWidth = 9;  // Asigna el tamaño del juego a gameWidth (ancho)
+        int gameHeight = 15; // Asigna el tamaño del juego a gameHeight (alto)
+        mGameFrame.init(gameWidth, gameHeight); // Llama al método init con los valores de ancho y alto
     }
+
 
     @Override
     public void draw(Puntos[][] points) {

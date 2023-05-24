@@ -1,7 +1,10 @@
 package com.example.bloxtrixgame.modelos;
 
 
+
+import android.graphics.Color;
 import android.os.Handler;
+
 import android.util.Log;
 
 import com.example.bloxtrixgame.presentacion.PresenterCompletableObserver;
@@ -16,14 +19,18 @@ import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 
+
 public class BlockNineModelo implements modeloJuego {
 
     private static final String TAG = "TetrisGameModel";
 
     private static final int GAME_SIZE = 15;
     private static final int PLAYING_AREA_WIDTH = 10;
-    private static final int PLAYING_AREA_HEIGHT = GAME_SIZE;
+    private static final int PLAYING_AREA_HEIGHT = 15;
     private static final int UPCOMING_AREA_SIZE = 4;
+
+
+
 
     private Puntos[][] mPoints;
     private Puntos[][] mPlayingPoints;
@@ -37,6 +44,7 @@ public class BlockNineModelo implements modeloJuego {
     private PresenterObserver<Integer> mScoreUpdatedObserver;
 
     private final Handler mHandler = new Handler();
+
 
     private enum BrickType {
         L(0), T(1), S(2), STICK(3), SQUARE(4), Z(5),J(6);
@@ -68,7 +76,7 @@ public class BlockNineModelo implements modeloJuego {
 
         static BrickType random() {
             Random random = new Random();
-            return fromValue(random.nextInt(5));
+            return fromValue(random.nextInt(7));
         }
     }
 
@@ -96,6 +104,7 @@ public class BlockNineModelo implements modeloJuego {
         newGame();
     }
 
+
     @Override
     public int getGameSize() {
         return GAME_SIZE;
@@ -112,14 +121,15 @@ public class BlockNineModelo implements modeloJuego {
         mFallingPoints.clear();
         generateUpcomingBrick();
     }
-
     private void generateUpcomingBrick() {
         BrickType upcomingBrick = BrickType.random();
         for (int i = 0; i < UPCOMING_AREA_SIZE; i++) {
             for (int j = 0; j < UPCOMING_AREA_SIZE; j++) {
                 mUpcomingPoints[i][j].type = TipodePunto.EMPTY;
+
             }
         }
+
         switch (upcomingBrick) {
             case L:
                 mUpcomingPoints[1][1].type = TipodePunto.BOX;
@@ -133,30 +143,35 @@ public class BlockNineModelo implements modeloJuego {
                 mUpcomingPoints[1][1].type = TipodePunto.BOX;
                 mUpcomingPoints[3][1].type = TipodePunto.BOX;
                 mUpcomingPoints[2][2].type = TipodePunto.BOX;
+
                 break;
             case S:
                 mUpcomingPoints[1][1].type = TipodePunto.BOX;
                 mUpcomingPoints[2][1].type = TipodePunto.BOX;
                 mUpcomingPoints[2][2].type = TipodePunto.BOX;
                 mUpcomingPoints[3][2].type = TipodePunto.BOX;
+
                 break;
             case STICK:
                 mUpcomingPoints[0][1].type = TipodePunto.BOX;
                 mUpcomingPoints[1][1].type = TipodePunto.BOX;
                 mUpcomingPoints[2][1].type = TipodePunto.BOX;
                 mUpcomingPoints[3][1].type = TipodePunto.BOX;
+
                 break;
             case J:
                 mUpcomingPoints[1][1].type = TipodePunto.BOX;
                 mUpcomingPoints[2][1].type = TipodePunto.BOX;
                 mUpcomingPoints[3][1].type = TipodePunto.BOX;
                 mUpcomingPoints[3][0].type = TipodePunto.BOX;
+
                 break;
             case Z:
                 mUpcomingPoints[1][0].type = TipodePunto.BOX;
                 mUpcomingPoints[1][1].type = TipodePunto.BOX;
                 mUpcomingPoints[2][1].type = TipodePunto.BOX;
                 mUpcomingPoints[2][2].type = TipodePunto.BOX;
+
                 break;
 
             case SQUARE:
@@ -164,6 +179,7 @@ public class BlockNineModelo implements modeloJuego {
                 mUpcomingPoints[1][2].type = TipodePunto.BOX;
                 mUpcomingPoints[2][1].type = TipodePunto.BOX;
                 mUpcomingPoints[2][2].type = TipodePunto.BOX;
+
                 break;
         }
 
@@ -256,12 +272,13 @@ public class BlockNineModelo implements modeloJuego {
     private boolean isNextMerged() {
         for (Puntos fallingPoint : mFallingPoints) {
             if (fallingPoint.y + 1 >= 0 && (fallingPoint.y == PLAYING_AREA_HEIGHT - 1 ||
-                    getPlayingPoint(fallingPoint.x, fallingPoint.y + 1).isStablePoint())) {
+                    getPlayingPoint(fallingPoint.x,fallingPoint.y + 1).isStablePoint())) {
                 return true;
             }
         }
         return false;
     }
+
 
     private boolean isOutSide() {
         for (Puntos fallingPoint : mFallingPoints) {
@@ -276,9 +293,12 @@ public class BlockNineModelo implements modeloJuego {
         if (point.x >= 0 && point.x < PLAYING_AREA_WIDTH &&
                 point.y >= 0 && point.y < PLAYING_AREA_HEIGHT) {
             mPoints[point.y][point.x] = point;
-            mPlayingPoints[point.y][point.x] = point;
+            if (point.y < PLAYING_AREA_HEIGHT) {
+                mPlayingPoints[point.y][point.x] = point;
+            }
         }
     }
+
 
     private Puntos getPlayingPoint(int x, int y) {
         if (x >= 0 && y >= 0 && x < PLAYING_AREA_WIDTH && y < PLAYING_AREA_HEIGHT) {
@@ -286,6 +306,7 @@ public class BlockNineModelo implements modeloJuego {
         }
         return null;
     }
+
 
     private void updateFallingPoints() {
         if (mFallingPoints.isEmpty()) {
@@ -363,6 +384,7 @@ public class BlockNineModelo implements modeloJuego {
                 break;
             case FIRE:
                 rotateFallingPoints();
+                break;
             case UP:
             default:
                 break;
@@ -412,7 +434,7 @@ public class BlockNineModelo implements modeloJuego {
                     break;
                 }
                 if (point.isFallingPoint) {
-                    Log.i(TAG, "rotatePoints: Falling point: " + point.x + ", " + point.y + "; type: " + point.type);
+                    Log.i(TAG, "rotatePoints: Punto en caída: " + point.x + ", " + point.y + "; tipo: " + point.type);
                 }
                 points[i][j] = new Puntos(x + size - 1 - i, y + j, point.type, point.isFallingPoint);
             }
@@ -421,7 +443,7 @@ public class BlockNineModelo implements modeloJuego {
             }
         }
         for (Puntos point: mFallingPoints) {
-            Log.i(TAG, "rotatePoints: Falling point 2: " + point.x + ", " + point.y + ", type = " + point.type);
+            Log.i(TAG, "rotatePoints: Punto en caída 2: " + point.x + ", " + point.y + ", tipo = " + point.type);
         }
         if (!canRotate) {
             return false;
@@ -444,6 +466,8 @@ public class BlockNineModelo implements modeloJuego {
                 }
             }
         }
+
+
         Log.i(TAG, "rotatePoints: falling points size = " + mFallingPoints.size());
         return true;
     }
