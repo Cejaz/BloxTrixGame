@@ -11,6 +11,10 @@ import androidx.annotation.Nullable;
 
 import com.example.bloxtrixgame.presentacion.Puntos;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
+
 public class marcojuego extends View {
     public marcojuego(Context context) {
         super(context);
@@ -25,17 +29,20 @@ public class marcojuego extends View {
     }
 
     private Puntos[][] mPoints;
-    private int mBoxSize;
-    private int mBoxPadding;
-    private int mGameSize;
+    private int mCellSize;
+    private int mGameWidth;
+    private int mGameHeight;
+
 
     private final Paint mPaint = new Paint();
 
-    public void init(int gameSize) {
-        mGameSize = gameSize;
+    public void init(int gameWidth, int gameHeight) {
+        mGameWidth = gameWidth;
+        mGameHeight = gameHeight;
         getViewTreeObserver().addOnGlobalLayoutListener(() -> {
-            mBoxSize = Math.min(getWidth(), getHeight()) / mGameSize;
-            mBoxPadding = mBoxSize / 10;
+            int width = getWidth();
+            int height = getHeight();
+            mCellSize = Math.min(width / mGameWidth, height / mGameHeight);
         });
     }
 
@@ -51,45 +58,62 @@ public class marcojuego extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         mPaint.setColor(Color.BLACK);
-        canvas.drawRect(0, 0, mGameSize, mGameSize, mPaint);
+        canvas.drawRect(0, 0, getWidth(), getHeight(), mPaint);
         if (mPoints == null) {
             return;
         }
-        for (int i = 0; i < mGameSize; i++) {
-            for (int j = 0; j < mGameSize; j++) {
-                Puntos point = getPoint(i, j);
-                int left, right, top, bottom;
-                mPaint.setColor(Color.WHITE);
+        for (int i = 0; i < mGameHeight; i++) {
+            for (int j = 0; j < mGameWidth; j++) {
+                Puntos point = getPoint(j, i);
+                int left = j * mCellSize;
+                int top = i * mCellSize;
+                int right = left + mCellSize;
+                int bottom = top + mCellSize;
+
                 switch (point.type) {
                     case BOX:
-                        left = mBoxSize * point.x + mBoxPadding;
-                        right = left + mBoxSize - mBoxPadding;
-                        top = mBoxSize * point.y + mBoxPadding;
-                        bottom = top + mBoxSize - mBoxPadding;
+                        List<Integer> colorList = Arrays.asList(
+                                Color.RED,
+                                Color.BLUE,
+                                Color.GREEN,
+                                Color.YELLOW,
+                                Color.MAGENTA
+                        );
+                        Random random = new Random();
+                        int randomColor = colorList.get(random.nextInt(colorList.size()));
+                        mPaint.setColor(randomColor);
+                        int padding = mCellSize / 10;
+                        canvas.drawRect(left + padding, top + padding, right - padding, bottom - padding, mPaint);
                         break;
                     case VERTICAL_LINE:
-                        left = mBoxSize * point.x;
-                        right = left + mBoxPadding;
-                        top = mBoxSize * point.y;
-                        bottom = top + mBoxSize;
+                        mPaint.setColor(Color.GREEN);
+                        int lineWidth = mCellSize / 10;
+                        int lineLeft = left + mCellSize / 2 - lineWidth / 2;
+                        int lineRight = lineLeft + lineWidth;
+                        canvas.drawRect(lineLeft, top, lineRight, bottom, mPaint);
                         break;
+
                     case HORIZONTAL_LINE:
-                        left = mBoxSize * point.y;
-                        right = left + mBoxSize;
-                        top = mBoxSize * point.y;
-                        bottom = top + mBoxPadding;
+                        mPaint.setColor(Color.GREEN);
+                        int lineHeight = mCellSize / 10;
+                        int lineTop = top + mCellSize / 2 - lineHeight / 2;
+                        int lineBottom = lineTop + lineHeight;
+                        canvas.drawRect(left, lineTop, right, lineBottom, mPaint);
                         break;
                     case EMPTY:
                     default:
-                        left = mBoxSize * point.x;
-                        right = left + mBoxSize;
-                        top = mBoxSize * point.y;
-                        bottom = top + mBoxSize;
                         mPaint.setColor(Color.BLACK);
+                        canvas.drawRect(left, top, right, bottom, mPaint);
+                        mPaint.setColor(Color.WHITE);
+                        canvas.drawLine(left, top, right, top, mPaint); // Línea superior
+                        canvas.drawLine(left, top, left, bottom, mPaint); // Línea izquierda
+                        canvas.drawLine(right, top, right, bottom, mPaint); // Línea derecha
+                        canvas.drawLine(left, bottom, right, bottom, mPaint); // Línea inferior
+
                         break;
                 }
-                canvas.drawRect(left, top, right, bottom, mPaint);
             }
         }
     }
+
 }

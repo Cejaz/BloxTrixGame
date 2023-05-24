@@ -2,8 +2,8 @@ package com.example.bloxtrixgame.presentacion;
 
 public interface modeloJuego {
 
-    int FPS = 60;
-    int SPEED = 25;
+    int FPS = 110;
+    int SPEED = 65;
     void init();
     int getGameSize();
     void newGame();

@@ -6,6 +6,7 @@ public class Puntos {
     public final int x, y;
     public boolean isFallingPoint;
     public TipodePunto type;
+    public int color;
 
     public Puntos(int x, int y) {
         this.x = x;
@@ -24,4 +25,5 @@ public class Puntos {
     public boolean isStablePoint() {
         return !isFallingPoint && type == TipodePunto.BOX;
     }
+
 }
