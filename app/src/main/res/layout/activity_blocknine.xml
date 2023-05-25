@@ -7,6 +7,17 @@
     android:background="@drawable/fondo"
     tools:context=".blocknine">
 
+    <com.example.bloxtrixgame.vistas.marcojuego
+        android:id="@+id/contenedorjuego"
+        android:layout_width="320dp"
+        android:layout_height="530dp"
+        android:layout_marginTop="12dp"
+        android:background="@color/black"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/puntaje" />
+
     <TextView
         android:id="@+id/estado"
         android:layout_width="0dp"
@@ -20,36 +31,13 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/contenedorjuego"
         app:layout_constraintTop_toTopOf="@id/contenedorjuego"
-        app:layout_constraintVertical_bias="0.0" />
-
-    <com.example.bloxtrixgame.vistas.marcojuego
-        android:id="@+id/contenedorjuego"
-        android:layout_width="415dp"
-        android:layout_height="700dp"
-        android:layout_marginTop="4dp"
-        android:background="@color/black"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.501"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/puntaje" />
-
-    <Button
-        android:id="@+id/botonreinicio_ctl"
-        android:layout_width="89dp"
-        android:layout_height="36dp"
-        android:layout_marginTop="4dp"
-        android:backgroundTint="#FBF7F7"
-        android:text="RESTART"
-        android:textColor="@color/black"
-        app:layout_constraintEnd_toEndOf="@id/contenedorjuego"
-        app:layout_constraintTop_toTopOf="@id/contenedorjuego" />
+        app:layout_constraintVertical_bias="1.0" />
 
     <Button
         android:id="@+id/btnHome"
         android:layout_width="89dp"
         android:layout_height="36dp"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="8dp"
         android:backgroundTint="#FBF7F7"
         android:text="HOME"
         android:textColor="@color/black"
@@ -60,7 +48,7 @@
         android:id="@+id/puntaje"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="48dp"
+        android:layout_marginTop="24dp"
         android:background="@color/black"
         android:text="Score: 0"
         android:textColor="@color/gris"
@@ -72,7 +60,7 @@
         android:id="@+id/botonjuego_ctl"
         android:layout_width="70dp"
         android:layout_height="30dp"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="8dp"
         android:background="@color/white"
         android:text="Start"
         android:textColor="@color/black"
@@ -84,54 +72,66 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.68" />
+        app:layout_constraintGuide_begin="278dp" />
 
     <Button
         android:id="@+id/arriba"
-        android:layout_width="90dp"
-        android:layout_height="90dp"
-        android:layout_marginTop="88dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="48dp"
         android:background="@drawable/img_2"
         app:layout_constraintEnd_toStartOf="@+id/lineaguia"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/contenedorjuego" />
 
     <Button
+        android:id="@+id/fire_bton"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:background="@drawable/img_4"
+        app:layout_constraintBottom_toBottomOf="@id/down"
+        app:layout_constraintStart_toEndOf="@id/lineaguia"
+        app:layout_constraintTop_toTopOf="@+id/arriba" />
+
+    <Button
+        android:id="@+id/derecho"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="4dp"
+        android:background="@drawable/img_3"
+        app:layout_constraintStart_toEndOf="@id/arriba"
+        app:layout_constraintTop_toBottomOf="@+id/arriba" />
+
+    <Button
         android:id="@+id/letf"
-        android:layout_width="90dp"
-        android:layout_height="90dp"
-        android:layout_marginTop="8dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="4dp"
         android:background="@drawable/img"
         app:layout_constraintEnd_toStartOf="@id/arriba"
         app:layout_constraintTop_toBottomOf="@+id/arriba" />
 
     <Button
-        android:id="@+id/fire_bton"
-        android:layout_width="120dp"
-        android:layout_height="120dp"
-        android:background="@drawable/img_4"
-        app:layout_constraintBottom_toBottomOf="@id/down"
-        app:layout_constraintStart_toEndOf="@id/lineaguia"
-        app:layout_constraintTop_toTopOf="@+id/arriba"
-        app:layout_constraintVertical_bias="0.447" />
-
-    <Button
         android:id="@+id/down"
-        android:layout_width="90dp"
-        android:layout_height="90dp"
-        android:layout_marginTop="12dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="4dp"
         android:background="@drawable/img_1"
         app:layout_constraintStart_toEndOf="@id/letf"
         app:layout_constraintTop_toBottomOf="@+id/letf" />
 
     <Button
-        android:id="@+id/derecho"
-        android:layout_width="90dp"
-        android:layout_height="90dp"
+        android:id="@+id/botonreinicio_ctl"
+        android:layout_width="89dp"
+        android:layout_height="36dp"
         android:layout_marginTop="8dp"
-        android:background="@drawable/img_3"
-        app:layout_constraintStart_toEndOf="@id/arriba"
-        app:layout_constraintTop_toBottomOf="@+id/arriba" />
+        android:backgroundTint="#FBF7F7"
+        android:text="RESTART"
+        android:textColor="@color/black"
+        app:layout_constraintEnd_toEndOf="@id/contenedorjuego"
+        app:layout_constraintTop_toTopOf="@id/contenedorjuego" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
