@@ -7,12 +7,20 @@ import android.os.Handler;
 
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
+import com.example.bloxtrixgame.presentacion.EstadoJuego;
 import com.example.bloxtrixgame.presentacion.PresenterCompletableObserver;
 import com.example.bloxtrixgame.presentacion.PresenterObserver;
 import com.example.bloxtrixgame.presentacion.Puntos;
 import com.example.bloxtrixgame.presentacion.TipodePunto;
 import com.example.bloxtrixgame.presentacion.TurnoJuego;
 import com.example.bloxtrixgame.presentacion.modeloJuego;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.LinkedList;
 import java.util.Random;
@@ -36,6 +44,7 @@ public class BlockNineModelo implements modeloJuego {
     private Puntos[][] mPlayingPoints;
     private Puntos[][] mUpcomingPoints;
     private int mScore;
+    private int finalScore;
     private final AtomicBoolean mIsGamePaused = new AtomicBoolean();
     private final AtomicBoolean mIsTurning = new AtomicBoolean();
     private final LinkedList<Puntos> mFallingPoints = new LinkedList<>();
@@ -44,6 +53,8 @@ public class BlockNineModelo implements modeloJuego {
     private PresenterObserver<Integer> mScoreUpdatedObserver;
 
     private final Handler mHandler = new Handler();
+    private DatabaseReference mDatabase;
+    private EstadoJuego stateGame;
 
 
     private enum BrickType {
@@ -120,6 +131,24 @@ public class BlockNineModelo implements modeloJuego {
         }
         mFallingPoints.clear();
         generateUpcomingBrick();
+
+        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+            String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+            DatabaseReference userRef = FirebaseDatabase.getInstance().getReference().child("users").child(userId);
+            userRef.child("scores").push().setValue(finalScore)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Log.d(TAG, "Score saved successfully");
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.e(TAG, "Failed to save score: " + e.getMessage());
+                        }
+                    });
+        }
     }
     private void generateUpcomingBrick() {
         BrickType upcomingBrick = BrickType.random();
@@ -232,6 +261,7 @@ public class BlockNineModelo implements modeloJuego {
                 }
                 if (isScored) {
                     mScore++;
+                    finalScore = mScore;
                     if (mScoreUpdatedObserver != null) {
                         mHandler.post(() -> mScoreUpdatedObserver.observe(mScore));
                     }
@@ -470,6 +500,62 @@ public class BlockNineModelo implements modeloJuego {
 
         Log.i(TAG, "rotatePoints: falling points size = " + mFallingPoints.size());
         return true;
+    }
+
+    public BlockNineModelo() {
+        // Obtén la instancia de la base de datos de Firebase
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+    }
+    private boolean isGameOver() {
+        if (stateGame == EstadoJuego.OVER) {
+            System.out.println(mScore);
+            guardarPuntajeFinalEnDatabase(); // Guarda el puntaje final en Realtime Database
+            return true;
+        }
+        return false;
+    }
+
+    private void guardarPuntajeFinalEnDatabase() {
+        // Crea un nodo en la base de datos con un ID único (por ejemplo, utilizando el método push())
+        DatabaseReference puntajeRef = mDatabase.child("puntajes").push();
+
+        // Crea un objeto para representar el puntaje final con sus atributos
+        Puntaje scoreFinal = new Puntaje(finalScore);
+
+        // Guarda el objeto puntajeFinal en la base de datos
+        puntajeRef.setValue(scoreFinal)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        // El puntaje final se guardó exitosamente en la base de datos
+                        // Realiza cualquier acción adicional que necesites
+                        // Por ejemplo, mostrar un mensaje de éxito al usuario
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        // Ocurrió un error al guardar el puntaje final en la base de datos
+                        // Maneja el error de acuerdo a tus necesidades
+                    }
+                });
+    }
+
+    // Clase auxiliar para representar el puntaje final
+    public static class Puntaje {
+        private int puntaje;
+
+        public Puntaje() {
+            // Constructor vacío requerido para la deserialización de Firebase
+        }
+
+        public Puntaje(int puntaje) {
+            this.puntaje = puntaje;
+        }
+
+        public int getPuntaje() {
+            return puntaje;
+        }
     }
 
     @Override
