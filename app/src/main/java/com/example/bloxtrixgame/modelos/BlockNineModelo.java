@@ -24,9 +24,9 @@ public class BlockNineModelo implements modeloJuego {
 
     private static final String TAG = "TetrisGameModel";
 
-    private static final int GAME_SIZE = 15;
+    private static final int GAME_SIZE = 25;
     private static final int PLAYING_AREA_WIDTH = 10;
-    private static final int PLAYING_AREA_HEIGHT = 15;
+    private static final int PLAYING_AREA_HEIGHT = 25;
     private static final int UPCOMING_AREA_SIZE = 4;
 
 

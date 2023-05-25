@@ -110,6 +110,7 @@ public class marcojuego extends View {
                         canvas.drawLine(right, top, right, bottom, mPaint); // Línea derecha
                         canvas.drawLine(left, bottom, right, bottom, mPaint); // Línea inferior
 
+
                         break;
                 }
             }
