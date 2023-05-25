@@ -18,6 +18,7 @@ import com.example.bloxtrixgame.presentacion.TurnoJuego;
 import com.example.bloxtrixgame.presentacion.modeloJuego;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -43,7 +44,7 @@ public class BlockNineModelo implements modeloJuego {
     private Puntos[][] mPlayingPoints;
     private Puntos[][] mUpcomingPoints;
     private int mScore;
-    private int puntajeFinal;
+    private int finalScore;
     private final AtomicBoolean mIsGamePaused = new AtomicBoolean();
     private final AtomicBoolean mIsTurning = new AtomicBoolean();
     private final LinkedList<Puntos> mFallingPoints = new LinkedList<>();
@@ -130,6 +131,24 @@ public class BlockNineModelo implements modeloJuego {
         }
         mFallingPoints.clear();
         generateUpcomingBrick();
+
+        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+            String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+            DatabaseReference userRef = FirebaseDatabase.getInstance().getReference().child("users").child(userId);
+            userRef.child("scores").push().setValue(finalScore)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Log.d(TAG, "Score saved successfully");
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.e(TAG, "Failed to save score: " + e.getMessage());
+                        }
+                    });
+        }
     }
     private void generateUpcomingBrick() {
         BrickType upcomingBrick = BrickType.random();
@@ -242,6 +261,7 @@ public class BlockNineModelo implements modeloJuego {
                 }
                 if (isScored) {
                     mScore++;
+                    finalScore = mScore;
                     if (mScoreUpdatedObserver != null) {
                         mHandler.post(() -> mScoreUpdatedObserver.observe(mScore));
                     }
@@ -488,7 +508,7 @@ public class BlockNineModelo implements modeloJuego {
     }
     private boolean isGameOver() {
         if (stateGame == EstadoJuego.OVER) {
-            puntajeFinal = mScore; // Guarda el puntaje actual en la variable puntajeFinal
+            System.out.println(mScore);
             guardarPuntajeFinalEnDatabase(); // Guarda el puntaje final en Realtime Database
             return true;
         }
@@ -500,7 +520,7 @@ public class BlockNineModelo implements modeloJuego {
         DatabaseReference puntajeRef = mDatabase.child("puntajes").push();
 
         // Crea un objeto para representar el puntaje final con sus atributos
-        Puntaje scoreFinal = new Puntaje(puntajeFinal);
+        Puntaje scoreFinal = new Puntaje(finalScore);
 
         // Guarda el objeto puntajeFinal en la base de datos
         puntajeRef.setValue(scoreFinal)
