@@ -19,7 +19,7 @@
         android:textColor="@color/white"
         android:textSize="58sp"
         app:layout_constraintBottom_toTopOf="@+id/tableLayout"
-        app:layout_constraintHorizontal_bias="0.445"
+        app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -27,19 +27,19 @@
 
     <ImageView
         android:id="@+id/backtop"
-        android:layout_width="103dp"
-        android:layout_height="100dp"
+        android:layout_width="62dp"
+        android:layout_height="81dp"
         android:src="@drawable/bck"
         app:layout_constraintBottom_toTopOf="@+id/tableLayout"
-        app:layout_constraintHorizontal_bias="0.08"
+        app:layout_constraintHorizontal_bias="0.037"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintVertical_bias="0.493" />
 
     <TableLayout
         android:id="@+id/tableLayout"
-        android:layout_width="654dp"
+        android:layout_width="340dp"
         android:layout_height="355dp"
         android:background="@drawable/background_table"
         android:stretchColumns="*"

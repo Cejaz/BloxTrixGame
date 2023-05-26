@@ -23,3 +23,7 @@ x
 Happ/src/main/java/com/example/bloxtrixgame/presentacion/EstadoJuego.java,1\d\1d1b7082b24724db93cf65ad32fd18c9436ee7ca
 j
 :app/src/main/java/com/example/bloxtrixgame/toppuntaje.java,7\5\75c60eaabee8a69b53ac1fbb5f214006bb1805fe
+q
+Aapp/src/main/java/com/example/bloxtrixgame/vistas/marcojuego.java,5\e\5e6fb86a5126a9f387066b8359bb243cb659e51a
+x
+Happ/src/main/java/com/example/bloxtrixgame/vistas/VistaJuegoFabrica.java,3\f\3fcf4f0d659be6ee4c25b90825cb7b3a94298dec
