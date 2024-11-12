@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace 'app.juego.finalappmoviles' 
+    namespace 'com.example.bloxtrixgame'
     compileSdk 33
 
     defaultConfig {
-        applicationId "app.juego.finalappmoviles" 
+        applicationId "com.example.bloxtrixgame"
         minSdk 24
         targetSdk 33
         versionCode 1

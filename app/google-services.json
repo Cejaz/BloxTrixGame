@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:264143170873:android:5a97b0804056e58d308ce8",
+        "mobilesdk_app_id": "1:264143170873:android:88539651f3cc5629308ce8",
         "android_client_info": {
-          "package_name": "app.juego.finalappmoviles"
+          "package_name": "com.example.bloxtrixgame"
         }
       },
       "oauth_client": [],
