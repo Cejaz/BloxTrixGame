@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace 'com.example.bloxtrixgame'
+    namespace 'upb.juego.final' 
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.example.bloxtrixgame"
+        applicationId "upb.juego.final" 
         minSdk 24
         targetSdk 33
         versionCode 1
@@ -31,7 +31,6 @@ android {
 }
 
 dependencies {
-
     implementation 'androidx.appcompat:appcompat:1.4.1'
     implementation 'com.google.android.material:material:1.5.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.3'
