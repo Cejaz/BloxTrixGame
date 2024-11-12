@@ -1,36 +1,26 @@
 {
   "project_info": {
-    "project_number": "164044933008",
-    "project_id": "bloxtrix-1dd03",
-    "storage_bucket": "bloxtrix-1dd03.appspot.com"
+    "project_number": "264143170873",
+    "project_id": "juegoappm",
+    "storage_bucket": "juegoappm.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:164044933008:android:e8f07609fa6d9912801515",
+        "mobilesdk_app_id": "1:264143170873:android:ae3ddcb8fcdcdebf308ce8",
         "android_client_info": {
-          "package_name": "com.example.bloxtrixgame"
+          "package_name": "upb.juego.final"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "164044933008-um2o8dca5ejr5i1ke7jlv1ri3q1psrdq.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyBt0ObWljLUPijVSKnqDuASmRy6ueLm9c0"
+          "current_key": "AIzaSyDn9d4e1WtqBrnIV9lf_Pv9BN4hgZvDc1Y"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "164044933008-um2o8dca5ejr5i1ke7jlv1ri3q1psrdq.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     }
