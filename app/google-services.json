@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:264143170873:android:ae3ddcb8fcdcdebf308ce8",
+        "mobilesdk_app_id": "1:264143170873:android:5a97b0804056e58d308ce8",
         "android_client_info": {
-          "package_name": "upb.juego.final"
+          "package_name": "app.juego.finalappmoviles"
         }
       },
       "oauth_client": [],

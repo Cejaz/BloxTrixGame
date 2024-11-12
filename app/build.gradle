@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace 'upb.juego.final' 
+    namespace 'app.juego.finalappmoviles' 
     compileSdk 33
 
     defaultConfig {
-        applicationId "upb.juego.final" 
+        applicationId "app.juego.finalappmoviles" 
         minSdk 24
         targetSdk 33
         versionCode 1
