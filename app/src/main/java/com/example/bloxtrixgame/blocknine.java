@@ -2,7 +2,6 @@ package com.example.bloxtrixgame;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -11,15 +10,12 @@ import android.widget.TextView;
 
 import com.example.bloxtrixgame.modelos.ModeloJuegoFactory;
 import com.example.bloxtrixgame.modelos.TipoJuego;
-import com.example.bloxtrixgame.presentacion.EstadoJuego;
 import com.example.bloxtrixgame.presentacion.TurnoJuego;
 import com.example.bloxtrixgame.presentacion.presentacionjuego;
 import com.example.bloxtrixgame.vistas.VistaJuegoFabrica;
 import com.example.bloxtrixgame.vistas.marcojuego;
 
 public class blocknine extends AppCompatActivity {
-
-    private static final String TAG = "MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,12 +28,10 @@ public class blocknine extends AppCompatActivity {
         Button gameCtlBtn = findViewById(R.id.botonjuego_ctl);
         Button restCtlBtn = findViewById(R.id.botonreinicio_ctl);
         Button homeCtlBtn = findViewById(R.id.btnHome);
-        homeCtlBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), home.class);
-                startActivity(intent);
-            }
+
+        homeCtlBtn.setOnClickListener(v -> {
+            Intent intent = new Intent(getApplicationContext(), home.class);
+            startActivity(intent);
         });
 
         presentacionjuego gamePresenter = new presentacionjuego();
@@ -59,6 +53,5 @@ public class blocknine extends AppCompatActivity {
         gameCtlBtn.setOnClickListener(v -> gamePresenter.changeStatus());
         restCtlBtn.setOnClickListener(v -> gamePresenter.restartGame());
         gamePresenter.init();
-
     }
 }
